@@ -358,7 +358,7 @@ toShareQuery then parseShareParams round-trips {expr:'0 9 * * 1-5', dialect:'uni
   - `CopyButton({ text, label, big?: boolean })` — inline checkmark 1.5–2 s; `big` also fires a brief toast; both announced through one `aria-live="polite"` region.
   - `cron-input.tsx` renders the raw input plus the always-visible per-field inputs (5/6/7 by dialect) kept in sync with the raw text, field-specific errors from `liveParse`, example chips (the PRESETS) and the dialect's `docUrl` link.
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
 ```ts
 cronReducer: SET_DIALECT quartz→unix on '0 0 9 ? * 2' → expr '0 9 * * 1'; on '0 0 12 L * ?' → expr unchanged
 cronReducer: SET_TZ with 'Not/AZone' → tz unchanged (UTC fallback decided in useCron, state never holds an invalid tz)
@@ -369,10 +369,10 @@ nowOverride 'garbage' → useCron().nowIssue is non-null and analysis.runs is no
 HYDRATE from '?expr=0+9+*+*+1-5&tz=Asia/Kolkata&dialect=unix' shows share-banner; '?tz=Not/AZone' shows none
 CopyButton: click → checkmark visible, reverts after 2 s (fake timers); big → toast text in the live region
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/components` → FAIL.
-- [ ] **Step 3:** Implement. Theme: `localStorage['cs.theme']` ∈ `light|dark|system`; the inline script sets `class="dark"` on `<html>` before paint; the toggle cycles all three.
-- [ ] **Step 4:** Run → PASS; `pnpm typecheck` clean.
-- [ ] **Step 5:** Commit `feat: app state, URL sync, theme and input UI`.
+- [x] **Step 2:** Run `pnpm vitest run tests/components` → FAIL.
+- [x] **Step 3:** Implement. Theme: `localStorage['cs.theme']` ∈ `light|dark|system`; the inline script sets `class="dark"` on `<html>` before paint; the toggle cycles all three.
+- [x] **Step 4:** Run → PASS; `pnpm typecheck` clean.
+- [x] **Step 5:** Commit `feat: app state, URL sync, theme and input UI`.
 
 ---
 
