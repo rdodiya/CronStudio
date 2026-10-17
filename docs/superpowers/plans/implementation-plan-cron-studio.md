@@ -319,7 +319,7 @@ analyze('garbage') → parse.ok false, runs [], explanation null, no throw
 - Produces in `builder.ts`: `type BuilderState = { frequency: 'minutes'|'hourly'|'daily'|'weekly'|'monthly'|'custom'; everyN: number; minute: number; hour: number; weekdays: number[]; dayOfMonth: number }`; `builderToExpr(b): string` (Unix 5-field; contiguous weekdays ≥ 3 as `a-b`); `exprToBuilder(expr: string): BuilderState | null`; `PRESETS: { id: string; label: string; expr: string }[]` with exactly: `*/5 * * * *`, `*/15 9-18 * * *`, `0 * * * *`, `0 9 * * *`, `0 9 * * 1-5`, `0 10 * * 1`, `0 0 1 * *`, and a custom entry.
 - Produces in `share.ts`: `parseShareParams(search: string): { expr?: string; dialect?: Dialect; tz?: string; format?: ExportFormat; loaded: boolean }` (drops invalid values; `expr` ≤ 200 chars; `loaded` true only if `expr` survived); `toShareQuery(s: { expr: string; dialect: Dialect; tz: string; format: ExportFormat }): string`.
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
 ```ts
 exportAs('kubernetes', {expr:'0 9 * * 1-5', tz:'Asia/Kolkata', …}).text contains "schedule: \"0 9 * * 1-5\"" and "timeZone: \"Asia/Kolkata\"" and 'concurrencyPolicy: Forbid'  (+ toMatchSnapshot for the full text)
 exportAs('github', …).text contains "- cron: '0 9 * * 1-5'" and 'workflow_dispatch'; tz 'Asia/Kolkata' → warnings has one containing 'UTC'; tz 'UTC' → warnings []
@@ -334,10 +334,10 @@ parseShareParams('?expr=<script>x</script>&tz=Not/AZone&dialect=evil&format=x') 
 parseShareParams('?tz=Not/AZone').loaded === false
 toShareQuery then parseShareParams round-trips {expr:'0 9 * * 1-5', dialect:'unix', tz:'Asia/Kolkata', format:'kubernetes'}
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/exporter tests/cron/builder.test.ts tests/share.test.ts` → FAIL.
-- [ ] **Step 3:** Implement per signatures.
-- [ ] **Step 4:** Run → PASS.
-- [ ] **Step 5:** Commit `feat: exporters, visual-builder logic and share-URL codec`.
+- [x] **Step 2:** Run `pnpm vitest run tests/exporter tests/cron/builder.test.ts tests/share.test.ts` → FAIL.
+- [x] **Step 3:** Implement per signatures.
+- [x] **Step 4:** Run → PASS.
+- [x] **Step 5:** Commit `feat: exporters, visual-builder logic and share-URL codec`.
 
 ---
 
