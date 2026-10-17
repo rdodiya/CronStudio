@@ -284,7 +284,7 @@ fields length: unix 5, quartz 6 or 7
   - `safetyChecks(s: Schedule, dialect: Dialect, tz: string, runs: Date[], now: Date): Issue[]` — rules: DOM+DOW both restricted in unix family → warning (`field:'dayOfMonth'`, message contains `OR`); no runs → error `never matches`; min gap between `runs` < 60 s → warning `excessively frequent`, < 5 min → info; github `minIntervalMin` violated → warning containing `5 minutes`; `utcOnly` and `tz !== 'UTC'` → warning containing `UTC`; all runs between 09:00–18:00 local and weekdays → info `business hours`; all runs Mon–Fri → info `weekday-only`; all Sat/Sun → info `weekend-only`; plus `dstWarnings`.
   - `analyze(i: { expr: string; dialect: Dialect; tz: string; now: Date; runCount: number }): Analysis` where `Analysis = { parse: ParseResult; runs: Date[]; explanation: Explanation | null; safety: Issue[]; badges: Badge[]; frequency: ReturnType<typeof frequency> | null; transitions: Transition[] }`. Invalid tz → treated as `UTC` with an `info` issue on field `expression`.
 
-- [ ] **Step 1: Write failing tests** (`now = 2026-10-16T00:00:00Z`):
+- [x] **Step 1: Write failing tests** (`now = 2026-10-16T00:00:00Z`):
 ```ts
 analyze('0 0 13 * 5', unix, UTC).safety has warning with 'OR'; runs include 2026-11-06 and 2026-11-13   // Review Focus 5
 analyze('0 0 31 2 *') → safety error 'never matches', runs [], explanation still present
@@ -295,10 +295,10 @@ analyze('0 9 * * 1-5', unix, UTC).safety has an info containing 'weekday-only'; 
 analyze('0 9 * * *', unix, 'Not/AZone') → no throw; safety has info mentioning fallback to UTC
 analyze('garbage') → parse.ok false, runs [], explanation null, no throw
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/cron/safety.test.ts` → FAIL.
-- [ ] **Step 3:** Implement `safetyChecks` and `analyze`.
-- [ ] **Step 4:** Run `pnpm vitest run --coverage` → engine coverage ≥ 90%; add tests for any uncovered `lib/cron` branch before moving on.
-- [ ] **Step 5:** Commit `feat: safety checks and analysis pipeline`.
+- [x] **Step 2:** Run `pnpm vitest run tests/cron/safety.test.ts` → FAIL.
+- [x] **Step 3:** Implement `safetyChecks` and `analyze`.
+- [x] **Step 4:** Run `pnpm vitest run --coverage` → engine coverage ≥ 90%; add tests for any uncovered `lib/cron` branch before moving on.
+- [x] **Step 5:** Commit `feat: safety checks and analysis pipeline`.
 
 ---
 

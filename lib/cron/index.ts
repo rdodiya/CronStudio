@@ -10,6 +10,8 @@ import { rateNextRuns } from './eventbridge/rate';
 export * from './types';
 export * from './dialects';
 export * from './compatibility';
+export * from './formatter';
+export * from './safety';
 
 export function parse(expr: string, dialect: Dialect): ParseResult {
   const meta = DIALECTS[dialect];
