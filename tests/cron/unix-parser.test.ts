@@ -74,4 +74,28 @@ describe('parseUnix', () => {
     expect(r.issues[0].field).toBe('expression');
     expect(r.issues[0].message).toContain('@');
   });
+
+  it('handles invalid step expressions and values', () => {
+    expect(parseUnix('*/* * * * *').ok).toBe(false);
+    expect(parseUnix('*/0 * * * *').ok).toBe(false);
+    expect(parseUnix('*/-5 * * * *').ok).toBe(false);
+    expect(parseUnix('1-2-3/5 * * * *').ok).toBe(false);
+    expect(parseUnix('70-80/5 * * * *').ok).toBe(false);
+    expect(parseUnix('10-5/2 * * * *').ok).toBe(false);
+    expect(parseUnix('99/5 * * * *').ok).toBe(false);
+    expect(parseUnix('*/abc * * * *').ok).toBe(false);
+  });
+
+  it('handles invalid range expressions', () => {
+    expect(parseUnix('1-2-3 * * * *').ok).toBe(false);
+    expect(parseUnix('5-1 * * * *').ok).toBe(false);
+    expect(parseUnix('0-70 * * * *').ok).toBe(false);
+    expect(parseUnix('FOO-BAR * * * *').ok).toBe(false);
+  });
+
+  it('handles empty list elements, unknown values and non-string inputs', () => {
+    expect(parseUnix('0,,15 * * * *').ok).toBe(false);
+    expect(parseUnix('FOO * * * *').ok).toBe(false);
+    expect(parseUnix(123 as unknown as string).ok).toBe(false);
+  });
 });

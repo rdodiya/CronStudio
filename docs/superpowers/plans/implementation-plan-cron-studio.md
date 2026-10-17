@@ -85,7 +85,7 @@ it('rejects @macros with a message', () => { expect(parseUnix('@daily').ok).toBe
   - `unixDayMatches(s: UnixSchedule, y: number, m: number /*1-12*/, d: number): boolean` — OR semantics when both DOM and DOW are restricted.
   - `validateUnix(s: UnixSchedule): Issue[]` — error when no (month, dom) pair can ever exist (e.g. `0 0 31 2 *`; Feb 29 is allowed).
 
-- [ ] **Step 1: Write failing tests.** Use `from = new Date('2026-10-16T00:00:00Z')` unless stated. Pinned values:
+- [x] **Step 1: Write failing tests.** Use `from = new Date('2026-10-16T00:00:00Z')` unless stated. Pinned values:
 ```ts
 '0 9 * * 1-5' tz Asia/Kolkata → runs[0] = 2026-10-16T03:30:00Z, runs[1] = 2026-10-19T03:30:00Z
 '0 12 * * *' tz UTC → every run at 12:00Z, including across 2026-11-01
@@ -99,10 +99,10 @@ Asia/Tokyo and Asia/Kolkata: '0 9 * * *' local hour is 9 for all 25 runs
 '0 0 31 2 *' → [] and call finishes in < 1000 ms; validateUnix returns an error issue
 '0 0 29 2 *' → runs[0] = 2028-02-29T00:00:00Z, runs[1] = 2032-02-29T00:00:00Z
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/cron/unix-scheduler.test.ts` → FAIL (not defined).
-- [ ] **Step 3:** Implement the three functions; `unixDayMatches` is plain set membership on `doms`/`dows`/`months`. Where the test says "ledger what croner does", assert the invariant given and record the observed behavior as a `Ruling:` — it feeds Task 6's DST wording.
-- [ ] **Step 4:** Run the test file → PASS.
-- [ ] **Step 5:** Commit `feat: unix scheduler and validator with DST tests`.
+- [x] **Step 2:** Run `pnpm vitest run tests/cron/unix-scheduler.test.ts` → FAIL (not defined).
+- [x] **Step 3:** Implement the three functions; `unixDayMatches` is plain set membership on `doms`/`dows`/`months`. Where the test says "ledger what croner does", assert the invariant given and record the observed behavior as a `Ruling:` — it feeds Task 6's DST wording.
+- [x] **Step 4:** Run the test file → PASS.
+- [x] **Step 5:** Commit `feat: unix scheduler and validator with DST tests`.
 
 ---
 
