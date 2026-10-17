@@ -1,101 +1,124 @@
-import Image from "next/image";
+'use client';
+
+import React from 'react';
+import { CronProvider } from '@/context/CronContext';
+import { useCron } from '@/hooks/useCron';
+import { DialectSelector } from '@/components/dialect-selector';
+import { TimezoneSelector } from '@/components/timezone-selector';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { ShareUrl } from '@/components/share-url';
+import { CronInput } from '@/components/cron-input';
+import { VisualBuilder } from '@/components/visual-builder';
+import { ExplanationPanel } from '@/components/explanation-panel';
+import { SafetyChecks } from '@/components/safety-checks';
+import { ExportPanel } from '@/components/export-panel';
+import { FrequencySummary } from '@/components/frequency-summary';
+import { Timeline } from '@/components/timeline';
+import { Calendar } from '@/components/calendar';
+import { NextRunsTable } from '@/components/next-runs-table';
+import { Clock, ShieldCheck, Share2, AlertCircle } from 'lucide-react';
+
+function CronStudioMain() {
+  const { state, nowIssue } = useCron();
+
+  return (
+    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors">
+      {/* Top Navigation Bar */}
+      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold">
+              <Clock className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-base sm:text-lg tracking-tight">Cron Studio</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
+                  v1.0
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground hidden sm:block">
+                Developer-grade cron schedule builder, explainer & safety validator
+              </p>
+            </div>
+          </div>
+
+          {/* Global Header Controls */}
+          <div className="flex items-center gap-2">
+            <DialectSelector />
+            <TimezoneSelector />
+            <ShareUrl />
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Share Hydration Banner */}
+        {state.fromShare && (
+          <div
+            data-testid="share-banner"
+            className="flex items-center gap-2.5 p-3 rounded-lg bg-primary/10 border border-primary/20 text-xs text-primary font-medium"
+          >
+            <Share2 className="w-4 h-4 shrink-0" />
+            <span>
+              Schedule loaded from shared link ({state.dialect} dialect &middot; timezone:{' '}
+              {state.tz})
+            </span>
+          </div>
+        )}
+
+        {/* Invalid Now Override Alert */}
+        {nowIssue && (
+          <div className="flex items-center gap-2.5 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-400 font-medium">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{nowIssue}</span>
+          </div>
+        )}
+
+        {/* Primary Interactive Panels: 2 columns on lg, 1 column on mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left Column: Expression Input, Builder, Explanation, Safety, Export */}
+          <div className="lg:col-span-6 flex flex-col gap-6">
+            <CronInput />
+            <VisualBuilder />
+            <ExplanationPanel />
+            <SafetyChecks />
+            <ExportPanel />
+          </div>
+
+          {/* Right Column: Frequency Summary, Visual Timeline, Calendar, Next Runs Table */}
+          <div className="lg:col-span-6 flex flex-col gap-6">
+            <FrequencySummary />
+            <Timeline />
+            <Calendar />
+            <NextRunsTable />
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t py-6 mt-12 bg-muted/20 text-xs text-muted-foreground">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <span>100% Client-Side Privacy: Schedules and data never leave your browser.</span>
+          </div>
+          <p>
+            Cron Studio &middot; MIT License &middot; Multi-dialect engine supporting Unix, Quartz,
+            EventBridge, GitHub, Kubernetes & Vercel.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <CronProvider>
+      <CronStudioMain />
+    </CronProvider>
   );
 }

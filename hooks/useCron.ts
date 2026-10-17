@@ -39,26 +39,26 @@ export function useCron() {
     return parse(state.expr, state.dialect);
   }, [state.expr, state.dialect]);
 
-  // Debounced state for heavy calculations (analysis, runs, frequency)
-  const debouncedState = useDebounce(state, 150);
+  // Debounced expr for heavy calculations (analysis, runs, frequency)
+  const debouncedExpr = useDebounce(state.expr, 150);
 
   // Sync state to URL via history.replaceState
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const query = toShareQuery({
-        expr: debouncedState.expr,
-        dialect: debouncedState.dialect,
-        tz: debouncedState.tz,
-        format: debouncedState.format,
+        expr: debouncedExpr,
+        dialect: state.dialect,
+        tz: state.tz,
+        format: state.format,
       });
       window.history.replaceState(null, '', query);
     }
-  }, [debouncedState.expr, debouncedState.dialect, debouncedState.tz, debouncedState.format]);
+  }, [debouncedExpr, state.dialect, state.tz, state.format]);
 
   // Pending calculation indicator: true when debounced differs from live for > 200ms
   const [pending, setPending] = useState(false);
   useEffect(() => {
-    if (debouncedState.expr !== state.expr) {
+    if (debouncedExpr !== state.expr) {
       const timer = setTimeout(() => {
         setPending(true);
       }, 200);
@@ -66,7 +66,7 @@ export function useCron() {
     } else {
       setPending(false);
     }
-  }, [debouncedState.expr, state.expr]);
+  }, [debouncedExpr, state.expr]);
 
   // Determine effective now and nowIssue
   const { effectiveNow, nowIssue } = useMemo(() => {
@@ -92,17 +92,17 @@ export function useCron() {
   // Full analysis calculation
   const analysis: Analysis = useMemo(() => {
     return analyze({
-      expr: debouncedState.expr,
-      dialect: debouncedState.dialect,
-      tz: debouncedState.tz,
+      expr: debouncedExpr,
+      dialect: state.dialect,
+      tz: state.tz,
       now: effectiveNow,
-      runCount: debouncedState.runCount,
+      runCount: state.runCount,
     });
   }, [
-    debouncedState.expr,
-    debouncedState.dialect,
-    debouncedState.tz,
-    debouncedState.runCount,
+    debouncedExpr,
+    state.dialect,
+    state.tz,
+    state.runCount,
     effectiveNow,
   ]);
 

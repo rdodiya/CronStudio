@@ -418,7 +418,7 @@ empty expression → empty-state message rendered; invalid expression → error 
 - `FrequencySummary`: perDay/perWeek/perMonth/perYear via `frequency`, formatted with `Intl.NumberFormat`.
 - Local time and UTC are always shown side by side and labelled.
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
 ```ts
 timelineX(from, from, 7, 700) === 0; timelineX(from+7d, from, 7, 700) === 700; timelineX(from+3.5d, …) === 350
 weekStartDefault('en-US') === 7; weekStartDefault('en-GB') === 1; weekStartDefault('') falls back without throwing
@@ -429,10 +429,10 @@ Timeline for '* * * * *' renders ≤ 2000 dots and the cap note; '0 9 * * *' 7-d
 Calendar for '0 0 1 * *' highlights exactly one day in the displayed month
 frequency summary for '*/5 * * * *' shows '105,120'
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/components/viz.test.tsx` → FAIL.
-- [ ] **Step 3:** Implement. Keyboard: all dots, calendar days and buttons reachable by Tab; timeline scrolls horizontally on mobile.
-- [ ] **Step 4:** Run → PASS; `pnpm vitest run` whole suite green; `pnpm build` passes.
-- [ ] **Step 5:** Commit `feat: next-runs table, timeline, calendar and frequency summary`.
+- [x] **Step 2:** Run `pnpm vitest run tests/components/viz.test.tsx` → FAIL.
+- [x] **Step 3:** Implement. Keyboard: all dots, calendar days and buttons reachable by Tab; timeline scrolls horizontally on mobile.
+- [x] **Step 4:** Run → PASS; `pnpm vitest run` whole suite green; `pnpm build` passes.
+- [x] **Step 5:** Commit `feat: next-runs table, timeline, calendar and frequency summary`.
 
 ---
 
