@@ -254,7 +254,7 @@ isValidTz('Not/AZone') === false; isValidTz('Asia/Kolkata') === true
 - Consumes: `Schedule`, `Dialect`, `QUARTZ_SYMBOL_HELP`, `timeSets`.
 - Produces: `explain(s: Schedule, dialect: Dialect, tz: string): Explanation` with `Explanation = { summary: string; fields: { name: string; raw: string; text: string }[]; notes: string[] }`. Own implementation, no `cronstrue` (it cannot describe `L/W/#`). Handles common shapes ("At 09:00, Monday through Friday"); anything else falls back to joining field texts.
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
 ```ts
 explain(unix '0 9 * * 1-5').summary === 'At 09:00, Monday through Friday'
 explain(unix '*/15 9-18 * * *').summary contains 'every 15 minutes' and '09:00' and '18:59' or '18:45' (assert the summary mentions both 9 and 18)
@@ -265,10 +265,10 @@ explain(quartz '*/10 * * * * ?').notes mention seconds; explain(quartz '… 2026
 explain(rate 'rate(5 minutes)').summary === 'Every 5 minutes'
 fields length: unix 5, quartz 6 or 7
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/cron/formatter.test.ts` → FAIL.
-- [ ] **Step 3:** Implement `explain`.
-- [ ] **Step 4:** Run → PASS.
-- [ ] **Step 5:** Commit `feat: plain-English formatter`.
+- [x] **Step 2:** Run `pnpm vitest run tests/cron/formatter.test.ts` → FAIL.
+- [x] **Step 3:** Implement `explain`.
+- [x] **Step 4:** Run → PASS.
+- [x] **Step 5:** Commit `feat: plain-English formatter`.
 
 ---
 
