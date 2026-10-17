@@ -151,7 +151,7 @@ parse_never_throws_on_garbage: same 5 inputs as Task 1
   - `parseEventBridge(input: string): ParseResult` — accepts `cron(m h dom mon dow year)`, the bare 6 fields, or `rate(N unit)`. Cron is converted to a `QuartzSchedule` with `seconds=[0]`; rate yields `RateSchedule`.
   - `rateNextRuns(s: RateSchedule, o: { from: Date; count: number; until?: Date }): Date[]` — `from + k·interval`.
 
-- [ ] **Step 1: Write failing tests** (tz `UTC`; Quartz weekday 6 = FRI):
+- [x] **Step 1: Write failing tests** (tz `UTC`; Quartz weekday 6 = FRI):
 ```ts
 '0 0 12 L * ?'    from 2026-10-16 → runs[0] = 2026-10-31T12:00Z
 '0 0 12 L-3 * ?'  from 2026-10-16 → runs[0] = 2026-10-28T12:00Z
@@ -168,10 +168,10 @@ eventbridge: 'cron(0 12 * * ? *)' ok; 'cron(0 12 * * * *)' error (both dom/dow);
   'rate(5 minutes)' ok; 'rate(1 minutes)' error; 'rate(5 minute)' error; 'rate(1 minute)' ok
 rateNextRuns 'rate(15 minutes)' from 2026-10-16T00:00Z → runs[0] = 2026-10-16T00:15Z
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/cron/quartz-scheduler.test.ts tests/cron/eventbridge.test.ts` → FAIL.
-- [ ] **Step 3:** Implement as signatures above. The nonexistent-local-time case (02:30 in a gap) is dropped, not shifted; ledger the ruling.
-- [ ] **Step 4:** Run → PASS.
-- [ ] **Step 5:** Commit `feat: quartz scheduler and eventbridge support`.
+- [x] **Step 2:** Run `pnpm vitest run tests/cron/quartz-scheduler.test.ts tests/cron/eventbridge.test.ts` → FAIL.
+- [x] **Step 3:** Implement as signatures above. The nonexistent-local-time case (02:30 in a gap) is dropped, not shifted; ledger the ruling.
+- [x] **Step 4:** Run → PASS.
+- [x] **Step 5:** Commit `feat: quartz scheduler and eventbridge support`.
 
 ---
 

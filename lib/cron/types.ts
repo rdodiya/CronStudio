@@ -66,13 +66,14 @@ export interface QuartzSchedule {
   years: number[] | null; // null = *
 }
 
-export interface RateSchedulePlaceholder {
+export interface RateSchedule {
   kind: 'rate';
   raw: string;
-  [key: string]: unknown;
+  every: number;
+  unit: 'minute' | 'hour' | 'day';
 }
 
-export type Schedule = UnixSchedule | QuartzSchedule | RateSchedulePlaceholder;
+export type Schedule = UnixSchedule | QuartzSchedule | RateSchedule;
 
 export type ParseResult =
   | { ok: true; schedule: Schedule; issues: Issue[] }
