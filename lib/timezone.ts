@@ -1,4 +1,56 @@
-import { fromZonedTime } from 'date-fns-tz';
+import { fromZonedTime, formatInTimeZone } from 'date-fns-tz';
+
+export function browserTz(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    return 'UTC';
+  }
+}
+
+export function isValidTz(tz: string): boolean {
+  if (!tz || typeof tz !== 'string') return false;
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+interface IntlWithSupportedValues {
+  supportedValuesOf?: (key: string) => string[];
+}
+
+export function listTzs(): string[] {
+  try {
+    const intlObj = Intl as unknown as IntlWithSupportedValues;
+    const supported =
+      typeof intlObj.supportedValuesOf === 'function'
+        ? intlObj.supportedValuesOf('timeZone')
+        : [];
+    const set = new Set<string>(['UTC', ...supported]);
+    return Array.from(set).sort();
+  } catch {
+    return ['UTC'];
+  }
+}
+
+export function formatLocal(d: Date, tz: string): string {
+  try {
+    return formatInTimeZone(d, tz, 'yyyy-MM-dd HH:mm:ss zzz');
+  } catch {
+    return d.toISOString();
+  }
+}
+
+export function formatUtc(d: Date): string {
+  try {
+    return formatInTimeZone(d, 'UTC', 'yyyy-MM-dd HH:mm:ss') + ' UTC';
+  } catch {
+    return d.toISOString();
+  }
+}
 
 export function localToUtc(
   y: number,

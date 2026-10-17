@@ -226,7 +226,7 @@ compatibility('0 0 12 L * ?','quartz') contains { label:'Unix compatible', ok:fa
   - `flagRun(run: Date, tr: Transition[]): 'dst-overlap' | null` — overlap if `run ∈ [at − Δ, at + Δ)`.
   - `dstWarnings(s: Schedule, tz: string, from: Date, to: Date): Issue[]` — for each transition, check the missing (gap) or repeated (overlap) local minutes against `dayMatches` and `timeSets`; warn "does not exist"/"occurs twice". Skip schedules whose hour set has 24 members (wildcard hours).
 
-- [ ] **Step 1: Write failing tests** (window 2026-01-01 → 2027-01-01):
+- [x] **Step 1: Write failing tests** (window 2026-01-01 → 2027-01-01):
 ```ts
 transitions('America/New_York') → [gap 2026-03-08T07:00Z, overlap 2026-11-01T06:00Z]
 transitions('Europe/London')    → [gap 2026-03-29T01:00Z, overlap 2026-10-25T01:00Z]
@@ -238,10 +238,10 @@ dstWarnings('*/30 * * * *', NY) → []
 dstWarnings('30 2 * * *', 'Asia/Tokyo') → []
 isValidTz('Not/AZone') === false; isValidTz('Asia/Kolkata') === true
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/dst` → FAIL.
-- [ ] **Step 3:** Implement. If a pinned UTC instant disagrees with the real tz database, trust the database, fix the test and ledger a `Ruling:`.
-- [ ] **Step 4:** Run → PASS.
-- [ ] **Step 5:** Commit `feat: timezone helpers and DST detection`.
+- [x] **Step 2:** Run `pnpm vitest run tests/dst` → FAIL.
+- [x] **Step 3:** Implement. If a pinned UTC instant disagrees with the real tz database, trust the database, fix the test and ledger a `Ruling:`.
+- [x] **Step 4:** Run → PASS.
+- [x] **Step 5:** Commit `feat: timezone helpers and DST detection`.
 
 ---
 
