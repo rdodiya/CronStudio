@@ -42,7 +42,9 @@ jobs:
       - name: Build Static App
         env:
           NEXT_PUBLIC_BASE_PATH: /CronStudio
-        run: pnpm build
+        run: |
+          pnpm build
+          touch ./out/.nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
