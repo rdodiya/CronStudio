@@ -386,7 +386,7 @@ CopyButton: click → checkmark visible, reverts after 2 s (fake timers); big �
 - Produces components with test ids: `preset-<id>` (ids = kebab labels from `PRESETS`), `frequency-select`, `explanation-summary`, `explanation-field-<name>`, `safety-<severity>` per issue, `badge-<ok|bad>` per compatibility badge, `export-tab-<format>`, `export-output`, `export-warning`, `copy-share-link`.
 - Builder shows only the controls relevant to the chosen frequency; preset click dispatches `SET_EXPR` with the preset text (converted for Quartz/EventBridge through `convertUnixToQuartz`); non-representable expressions (`exprToBuilder` → null) show the builder as "Custom" without overwriting the raw text.
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
 ```ts
 click preset-weekdays-at-9-00-am → cron-input value '0 9 * * 1-5' and explanation-summary text 'At 09:00, Monday through Friday'
 every preset click yields a valid parse (no safety-error rendered)
@@ -397,10 +397,10 @@ quartz '0 0 12 L * ?' + export-tab-kubernetes → export-output empty and warnin
 copy-share-link writes a URL containing 'expr=' to a mocked navigator.clipboard
 empty expression → empty-state message rendered; invalid expression → error state rendered, panels do not crash
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/components/panels.test.tsx` → FAIL.
-- [ ] **Step 3:** Implement the five components with shadcn primitives; badges/severity use semantic tokens plus an icon (never colour alone).
-- [ ] **Step 4:** Run → PASS.
-- [ ] **Step 5:** Commit `feat: builder, explanation, safety, export and share panels`.
+- [x] **Step 2:** Run `pnpm vitest run tests/components/panels.test.tsx` → FAIL.
+- [x] **Step 3:** Implement the five components with shadcn primitives; badges/severity use semantic tokens plus an icon (never colour alone).
+- [x] **Step 4:** Run → PASS.
+- [x] **Step 5:** Commit `feat: builder, explanation, safety, export and share panels`.
 
 ---
 
