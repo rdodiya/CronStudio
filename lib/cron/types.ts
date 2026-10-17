@@ -37,10 +37,33 @@ export interface UnixSchedule {
   dowRestricted: boolean;
 }
 
-export interface QuartzSchedulePlaceholder {
+export type DomSpec =
+  | { type: 'any' } // ?
+  | { type: 'all' } // *
+  | { type: 'values'; values: number[] } // lists, ranges, steps e.g. [1, 15]
+  | { type: 'last' } // L
+  | { type: 'lastOffset'; offset: number } // L-n
+  | { type: 'lastWeekday' } // LW
+  | { type: 'nearestWeekday'; day: number }; // nW
+
+export type DowSpec =
+  | { type: 'any' } // ?
+  | { type: 'all' } // *
+  | { type: 'values'; values: number[] } // 1=SUN..7=SAT
+  | { type: 'lastDay' } // L
+  | { type: 'lastDayOfWeek'; day: number } // nL
+  | { type: 'nthDayOfWeek'; day: number; nth: number }; // n#m
+
+export interface QuartzSchedule {
   kind: 'quartz';
   raw: string;
-  [key: string]: unknown;
+  seconds: number[];
+  minutes: number[];
+  hours: number[];
+  dom: DomSpec;
+  months: number[];
+  dow: DowSpec;
+  years: number[] | null; // null = *
 }
 
 export interface RateSchedulePlaceholder {
@@ -49,7 +72,7 @@ export interface RateSchedulePlaceholder {
   [key: string]: unknown;
 }
 
-export type Schedule = UnixSchedule | QuartzSchedulePlaceholder | RateSchedulePlaceholder;
+export type Schedule = UnixSchedule | QuartzSchedule | RateSchedulePlaceholder;
 
 export type ParseResult =
   | { ok: true; schedule: Schedule; issues: Issue[] }

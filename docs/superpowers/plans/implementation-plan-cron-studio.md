@@ -119,7 +119,7 @@ Asia/Tokyo and Asia/Kolkata: '0 9 * * *' local hour is 9 for all 25 runs
   - `validateQuartz(s: QuartzSchedule): Issue[]`.
   - `QUARTZ_SYMBOL_HELP: Record<'?'|'L'|'W'|'#', string>` in `symbols.ts` (used by the formatter).
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
 ```ts
 parseQuartz('0 0 12 ? * MON-FRI').ok === true
 parseQuartz('0 0 12 * * *') → error on field 'dayOfWeek' containing "?" (both DOM and DOW unspecified)
@@ -130,10 +130,10 @@ parseQuartz('0 0 12 ? * 2').ok && dow means MONDAY (assert parsed dow spec conta
 parseQuartz('0 0 0 31 4 ?') → ok:true with validateQuartz issue 'never matches' (April has 30 days)
 parse_never_throws_on_garbage: same 5 inputs as Task 1
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/cron/quartz-parser.test.ts` → FAIL.
-- [ ] **Step 3:** Implement parser (field-by-field with ranges: sec/min 0–59, hour 0–23, dom 1–31, month 1–12/JAN–DEC, dow 1–7/SUN–SAT, year 1970–2199) and validator (never-match for impossible month/dom pairs and past-only years).
-- [ ] **Step 4:** Run → PASS.
-- [ ] **Step 5:** Commit `feat: quartz parser and validator`.
+- [x] **Step 2:** Run `pnpm vitest run tests/cron/quartz-parser.test.ts` → FAIL.
+- [x] **Step 3:** Implement parser (field-by-field with ranges: sec/min 0–59, hour 0–23, dom 1–31, month 1–12/JAN–DEC, dow 1–7/SUN–SAT, year 1970–2199) and validator (never-match for impossible month/dom pairs and past-only years).
+- [x] **Step 4:** Run → PASS.
+- [x] **Step 5:** Commit `feat: quartz parser and validator`.
 
 ---
 
