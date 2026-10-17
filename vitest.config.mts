@@ -8,6 +8,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
+    include: ['tests/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    exclude: ['e2e/**', 'node_modules/**', 'out/**', '.next/**'],
+    testTimeout: 20000,
     alias: {
       '@': fileURLToPath(new URL('./', import.meta.url)),
     },

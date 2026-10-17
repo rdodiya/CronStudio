@@ -51,6 +51,8 @@ export function Timeline() {
     };
   }, [liveParse, state.tz, fromDate, untilDate]);
 
+  const visibleRuns = useMemo(() => timelineRuns.slice(0, 500), [timelineRuns]);
+
   const svgWidth = 800;
   const svgHeight = 120;
   const paddingX = 30;
@@ -192,7 +194,7 @@ export function Timeline() {
             })}
 
           {/* Run points */}
-          {timelineRuns.map((r, idx) => {
+          {visibleRuns.map((r, idx) => {
             const x = paddingX + timelineX(r, fromDate, rangeDays, trackWidth);
             const title = `Local: ${formatLocal(r, state.tz)}\nUTC: ${formatUtc(r)}`;
             return (
