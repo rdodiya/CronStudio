@@ -34,3 +34,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# internal development, design & planning docs (local only)
+docs/
+PROJECT_REQUIREMENTS.md
+DESIGN_QUESTIONS.md
+DESIGN_QUE_ANS.md
+.claude/
