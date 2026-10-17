@@ -194,7 +194,7 @@ rateNextRuns 'rate(15 minutes)' from 2026-10-16T00:00Z → runs[0] = 2026-10-16T
   - `convertUnixToQuartz(expr: string): string` — `0 ` prefix, `?` in the unrestricted day field, weekday +1.
   - `type Badge = { label: string; ok: boolean }`; `compatibility(expr: string, dialect: Dialect): Badge[]` — one `"<Label> compatible"` badge per dialect (`ok` if `parse` succeeds directly or after a safe conversion) plus `Conversion requires manual review` (`ok:false`) when any dialect fails.
 
-- [ ] **Step 1: Write failing tests:**
+- [x] **Step 1: Write failing tests:**
 ```ts
 convertQuartzToUnix('0 0 9 ? * 2')   → { ok:true, expr:'0 9 * * 1' }
 convertQuartzToUnix('0 0 12 L * ?')  → { ok:false }
@@ -205,10 +205,10 @@ frequency(parse('0 9 * * 1-5','unix'), 'UTC', 2026-10-16).matchingDays === 261  
 compatibility('0 9 * * 1-5','unix') contains { label:'Quartz compatible', ok:true } (via conversion) and no manual-review badge
 compatibility('0 0 12 L * ?','quartz') contains { label:'Unix compatible', ok:false } and 'Conversion requires manual review'
 ```
-- [ ] **Step 2:** Run `pnpm vitest run tests/cron/dialects.test.ts` → FAIL.
-- [ ] **Step 3:** Implement per the signatures.
-- [ ] **Step 4:** Run `pnpm vitest run tests/cron` → all green; `pnpm typecheck` clean.
-- [ ] **Step 5:** Commit `feat: dialect layer, public cron API, conversion and badges`.
+- [x] **Step 2:** Run `pnpm vitest run tests/cron/dialects.test.ts` → FAIL.
+- [x] **Step 3:** Implement per the signatures.
+- [x] **Step 4:** Run `pnpm vitest run tests/cron` → all green; `pnpm typecheck` clean.
+- [x] **Step 5:** Commit `feat: dialect layer, public cron API, conversion and badges`.
 
 ---
 
