@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CronProvider } from '@/context/CronContext';
 import { useCron } from '@/hooks/useCron';
 import { DialectSelector } from '@/components/dialect-selector';
@@ -16,27 +16,79 @@ import { FrequencySummary } from '@/components/frequency-summary';
 import { Timeline } from '@/components/timeline';
 import { Calendar } from '@/components/calendar';
 import { NextRunsTable } from '@/components/next-runs-table';
-import { Terminal, Shield, Share2, AlertCircle } from 'lucide-react';
+import { LandingView } from '@/components/landing-view';
+import { Terminal, Shield, Share2, AlertCircle, ArrowLeft } from 'lucide-react';
 
 function CronStudioMain() {
-  const { state, nowIssue } = useCron();
+  const { state, dispatch, nowIssue } = useCron();
+  const [currentView, setCurrentView] = useState<'landing' | 'workbench'>('landing');
 
+  // Handle URL parameters or view state on load
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      // If query has view=workbench or view=landing or has specific cron expression params
+      if (params.get('view') === 'workbench' || params.has('expr')) {
+        setCurrentView('workbench');
+      } else if (params.get('view') === 'landing') {
+        setCurrentView('landing');
+      }
+    }
+  }, []);
+
+  const openWorkbench = (expr?: string) => {
+    if (expr) {
+      dispatch({ type: 'SET_EXPR', expr });
+    }
+    setCurrentView('workbench');
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      params.set('view', 'workbench');
+      if (expr) params.set('expr', expr);
+      window.history.pushState(null, '', `?${params.toString()}`);
+    }
+  };
+
+  const openLanding = () => {
+    setCurrentView('landing');
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', `?view=landing`);
+    }
+  };
+
+  // If in landing view, render the comprehensive product landing page
+  if (currentView === 'landing') {
+    return <LandingView onOpenWorkbench={openWorkbench} />;
+  }
+
+  // Otherwise render the workbench
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-primary selection:text-primary-foreground font-sans">
       {/* Top Running Header / Brand Bar */}
       <header className="w-full bg-card border-b-2 border-border sticky top-0 z-50">
         <div className="max-w-[1720px] mx-auto px-4 lg:px-6 h-14 flex items-center justify-between gap-4">
-          {/* Left Brand & Status */}
+          {/* Left Brand & Navigation */}
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              data-testid="back-to-landing-btn"
+              onClick={openLanding}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-paper hover:bg-muted border-2 border-border font-mono text-xs font-bold text-foreground shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none"
+              title="Return to Product Landing Page"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">LANDING_PAGE</span>
+            </button>
+
             <div className="h-9 px-2.5 bg-primary text-primary-foreground border-2 border-border flex items-center gap-1.5 shadow-[2px_2px_0px_var(--border)]">
               <Terminal className="w-4 h-4" />
               <span className="font-mono font-black text-sm tracking-tight">CRON_STUDIO</span>
             </div>
             <span className="font-mono text-[11px] font-black px-2 py-0.5 bg-foreground text-background">
-              v1.2 // PRO
+              WORKBENCH
             </span>
-            <span className="hidden md:inline-block font-mono text-[11px] font-bold text-muted-foreground pl-2 border-l-2 border-border">
-              Deterministic Schedule Compiler, Explainer & Safety Linter
+            <span className="hidden lg:inline-block font-mono text-[11px] font-bold text-muted-foreground pl-2 border-l-2 border-border">
+              Deterministic Schedule Compiler, Explainer &amp; Safety Linter
             </span>
           </div>
 
