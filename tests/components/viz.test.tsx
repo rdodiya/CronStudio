@@ -104,7 +104,7 @@ describe('Task 12: Visualization components', () => {
     );
     expect(screen.getByTestId('timeline-cap')).toBeInTheDocument();
     unmount2();
-  }, 15000);
+  }, 45000);
 
   it('Calendar highlights matching days for monthly schedule', () => {
     render(

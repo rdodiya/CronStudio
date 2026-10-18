@@ -51,7 +51,8 @@ export function useCron() {
         tz: state.tz,
         format: state.format,
       });
-      window.history.replaceState(null, '', query);
+      const pathname = window.location.pathname || '/';
+      window.history.replaceState(null, '', `${pathname}${query}`);
     }
   }, [debouncedExpr, state.dialect, state.tz, state.format]);
 

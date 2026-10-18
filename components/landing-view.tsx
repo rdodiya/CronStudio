@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Terminal,
   Clock,
@@ -16,11 +18,17 @@ import {
 } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
 
-interface LandingViewProps {
-  onOpenWorkbench: (expr?: string) => void;
-}
+export function LandingView() {
+  const router = useRouter();
 
-export function LandingView({ onOpenWorkbench }: LandingViewProps) {
+  const handleOpenWorkbench = (expr?: string) => {
+    if (expr) {
+      router.push(`/explain/?expr=${encodeURIComponent(expr)}&dialect=unix&tz=UTC`);
+    } else {
+      router.push('/explain/');
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-primary selection:text-primary-foreground font-sans">
       {/* Top running header */}
@@ -35,20 +43,19 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
               v1.2 // PRO
             </span>
             <span className="hidden md:inline-block font-mono text-[11px] font-bold text-muted-foreground pl-2 border-l-2 border-border">
-              Deterministic Schedule Compiler, Explainer & Safety Linter
+              Deterministic Schedule Compiler, Explainer &amp; Safety Linter
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
+            <Link
+              href="/explain/"
               data-testid="landing-launch-btn"
-              onClick={() => onOpenWorkbench()}
               className="flex items-center gap-1.5 px-3.5 py-1 bg-primary text-primary-foreground border-2 border-border font-mono text-xs font-black uppercase shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none hover:opacity-95 transition-none"
             >
               <span>LAUNCH WORKBENCH</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </button>
+            </Link>
             <ThemeToggle />
           </div>
         </div>
@@ -83,25 +90,23 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
             </div>
 
             <div className="flex flex-wrap items-center gap-4 pt-4 border-t-2 border-border font-mono">
-              <button
-                type="button"
+              <Link
+                href="/explain/?expr=0+9+*+*+1-5&dialect=unix&tz=UTC"
                 data-testid="hero-explain-btn"
-                onClick={() => onOpenWorkbench('0 9 * * 1-5')}
                 className="flex items-center gap-2 px-5 py-3 bg-primary text-primary-foreground border-2 border-border text-sm font-black uppercase shadow-[4px_4px_0px_var(--border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none hover:opacity-95 transition-none"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>EXPLAIN IN DETAIL IN WORKBENCH</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </Link>
 
-              <button
-                type="button"
-                onClick={() => onOpenWorkbench('0 0 1 * *')}
+              <Link
+                href="/explain/?expr=0+0+1+*+*&dialect=unix&tz=UTC"
                 className="flex items-center gap-2 px-4 py-3 bg-card hover:bg-muted text-foreground border-2 border-border text-sm font-bold uppercase shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none"
               >
                 <Code2 className="w-4 h-4" />
                 <span>TRY &ldquo;0 0 1 * *&rdquo;</span>
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -164,14 +169,13 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => onOpenWorkbench('0 9 * * 1-5')}
+            <Link
+              href="/explain/?expr=0+9+*+*+1-5&dialect=unix&tz=UTC"
               className="mt-4 w-full py-2.5 bg-card hover:bg-primary hover:text-primary-foreground border-2 border-border font-mono text-xs font-black uppercase shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center justify-center gap-2"
             >
               <span>OPEN THIS IN WORKBENCH</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </button>
+            </Link>
           </div>
         </section>
 
@@ -203,14 +207,13 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
                   Instant natural language decomposition. Every token (seconds, minutes, hours, day of month, month, day of week, year) is resolved into deterministic human English with precise dialect nuances.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => onOpenWorkbench('*/15 9-18 * * 1-5')}
+              <Link
+                href="/explain/?expr=*%2F15+9-18+*+*+1-5&dialect=unix&tz=UTC"
                 className="font-mono text-xs font-bold text-foreground hover:text-primary flex items-center gap-1 pt-2 border-t border-border/40"
               >
                 <span>Inspect Business Hours</span>
                 <ArrowRight className="w-3 h-3" />
-              </button>
+              </Link>
             </div>
 
             {/* Feature 2 */}
@@ -220,20 +223,19 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
                   <Clock className="w-5 h-5" />
                 </div>
                 <h3 className="font-mono text-base font-black uppercase text-foreground">
-                  DST BISECTION & SAFETY LINTER
+                  DST BISECTION &amp; SAFETY LINTER
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                   Detect dangerous Daylight Saving Time gaps (non-existent wall-clock hours) and fallback ambiguities (doubled hours). Validates production thresholds to prevent sub-minute API throttling.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => onOpenWorkbench('30 2 * * *')}
+              <Link
+                href="/explain/?expr=30+2+*+*+*&dialect=unix&tz=America%2FNew_York"
                 className="font-mono text-xs font-bold text-foreground hover:text-secondary flex items-center gap-1 pt-2 border-t border-border/40"
               >
                 <span>Inspect DST Gap Case</span>
                 <ArrowRight className="w-3 h-3" />
-              </button>
+              </Link>
             </div>
 
             {/* Feature 3 */}
@@ -249,14 +251,13 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
                   Effortlessly switch between Unix 5-field, Quartz 6/7-field, AWS EventBridge, and Kubernetes CronJob syntax. Automatically handles Quartz mutual exclusion (<code className="font-bold">?</code>) and 0 vs 1 weekday indexing.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => onOpenWorkbench('0 0 9 ? * 2-6 *')}
+              <Link
+                href="/explain/?expr=0+0+9+%3F+*+2-6+*&dialect=quartz&tz=UTC"
                 className="font-mono text-xs font-bold text-foreground hover:text-primary flex items-center gap-1 pt-2 border-t border-border/40"
               >
                 <span>Inspect Quartz Expression</span>
                 <ArrowRight className="w-3 h-3" />
-              </button>
+              </Link>
             </div>
 
             {/* Feature 4 */}
@@ -272,14 +273,13 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
                   Hardware test-bench ergonomics with tactile cadence tabs (Minutes, Hourly, Daily, Weekly, Monthly) and individual weekday micro-switches. Bi-directionally compiles to and from raw syntax.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => onOpenWorkbench('0 12 * * 1-5')}
+              <Link
+                href="/explain/?expr=0+12+*+*+1-5&dialect=unix&tz=UTC"
                 className="font-mono text-xs font-bold text-foreground hover:text-primary flex items-center gap-1 pt-2 border-t border-border/40"
               >
                 <span>Launch Visual Builder</span>
                 <ArrowRight className="w-3 h-3" />
-              </button>
+              </Link>
             </div>
 
             {/* Feature 5 */}
@@ -289,20 +289,19 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
                   <Calendar className="w-5 h-5" />
                 </div>
                 <h3 className="font-mono text-base font-black uppercase text-foreground">
-                  BARCODE TIMELINE & CALENDAR
+                  BARCODE TIMELINE &amp; CALENDAR
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                   View scheduled trigger dispersion across 7, 14, or 30 days. Monthly calendar heatmap shows active invocation days and density metrics with exact local and UTC comparisons.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => onOpenWorkbench('0 0 1,15 * *')}
+              <Link
+                href="/explain/?expr=0+0+1%2C15+*+*&dialect=unix&tz=UTC"
                 className="font-mono text-xs font-bold text-foreground hover:text-secondary flex items-center gap-1 pt-2 border-t border-border/40"
               >
                 <span>Inspect Bi-Monthly Calendar</span>
                 <ArrowRight className="w-3 h-3" />
-              </button>
+              </Link>
             </div>
 
             {/* Feature 6 */}
@@ -318,14 +317,13 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
                   Export ready-to-commit configuration manifests for Kubernetes CronJobs, GitHub Actions workflows, AWS EventBridge rules, Vercel cron JSON, and Cloudflare Worker TOML.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => onOpenWorkbench('0 0 * * *')}
+              <Link
+                href="/explain/?expr=0+0+*+*+*&dialect=unix&tz=UTC"
                 className="font-mono text-xs font-bold text-foreground hover:text-primary flex items-center gap-1 pt-2 border-t border-border/40"
               >
                 <span>Export Daily Midnight</span>
                 <ArrowRight className="w-3 h-3" />
-              </button>
+              </Link>
             </div>
           </div>
         </section>
@@ -399,7 +397,7 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
                 ].map((row, idx) => (
                   <tr
                     key={idx}
-                    onClick={() => onOpenWorkbench(row.expr)}
+                    onClick={() => handleOpenWorkbench(row.expr)}
                     className="hover:bg-primary/20 cursor-pointer transition-none"
                   >
                     <td className="py-2.5 px-3 border-r-2 border-border/20 font-black text-foreground">
@@ -421,7 +419,7 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onOpenWorkbench(row.expr);
+                          handleOpenWorkbench(row.expr);
                         }}
                         className="px-2.5 py-1 bg-primary text-primary-foreground font-black uppercase border-2 border-border shadow-[1px_1px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                       >
@@ -449,15 +447,14 @@ export function LandingView({ onOpenWorkbench }: LandingViewProps) {
             </p>
           </div>
 
-          <button
-            type="button"
+          <Link
+            href="/explain/"
             data-testid="bottom-launch-workbench"
-            onClick={() => onOpenWorkbench()}
             className="px-6 py-4 bg-card text-foreground hover:bg-paper border-2 border-border font-mono text-sm font-black uppercase shadow-[4px_4px_0px_var(--border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none shrink-0 flex items-center gap-2"
           >
             <span>LAUNCH CRON STUDIO WORKBENCH</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </Link>
         </section>
       </main>
 
