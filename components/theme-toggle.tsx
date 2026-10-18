@@ -8,12 +8,16 @@ type Theme = 'light' | 'dark' | 'system';
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>('system');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const saved = localStorage.getItem('cs.theme') as Theme | null;
     if (saved && ['light', 'dark', 'system'].includes(saved)) {
       setTheme(saved);
       applyTheme(saved);
+    } else {
+      applyTheme('system');
     }
   }, []);
 
@@ -52,10 +56,17 @@ export function ThemeToggle() {
       onClick={cycleTheme}
       aria-label={`Current theme: ${theme}. Click to switch theme.`}
       title={`Theme: ${theme}`}
+      className="h-8 w-8 bg-card border-2 border-border shadow-[2px_2px_0px_var(--border)]"
     >
-      {theme === 'light' && <Sun className="w-4 h-4 text-amber-500" />}
-      {theme === 'dark' && <Moon className="w-4 h-4 text-blue-400" />}
-      {theme === 'system' && <Laptop className="w-4 h-4 text-muted-foreground" />}
+      {mounted ? (
+        <>
+          {theme === 'light' && <Sun className="w-4 h-4 text-secondary" />}
+          {theme === 'dark' && <Moon className="w-4 h-4 text-tertiary" />}
+          {theme === 'system' && <Laptop className="w-4 h-4 text-muted-foreground" />}
+        </>
+      ) : (
+        <Laptop className="w-4 h-4 text-muted-foreground" />
+      )}
     </Button>
   );
 }

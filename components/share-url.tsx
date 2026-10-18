@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useCron } from '@/hooks/useCron';
 import { toShareQuery } from '@/lib/share';
-import { Button } from './ui/button';
 import { Share2, Check } from 'lucide-react';
 
 export function ShareUrl() {
@@ -38,27 +37,24 @@ export function ShareUrl() {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        data-testid="copy-share-link"
-        onClick={handleShare}
-        className="inline-flex items-center gap-1.5 text-xs h-8"
-        title="Copy shareable link with current configuration"
-      >
-        {copied ? (
-          <>
-            <Check className="w-3.5 h-3.5 text-green-500" />
-            <span>Link Copied!</span>
-          </>
-        ) : (
-          <>
-            <Share2 className="w-3.5 h-3.5" />
-            <span>Share</span>
-          </>
-        )}
-      </Button>
-    </div>
+    <button
+      type="button"
+      data-testid="copy-share-link"
+      onClick={handleShare}
+      title="Copy shareable link with current configuration"
+      className="flex items-center gap-1.5 px-3 py-1 bg-card hover:bg-muted border-2 border-border font-mono text-xs font-black uppercase text-foreground shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none"
+    >
+      {copied ? (
+        <>
+          <Check className="w-3.5 h-3.5 text-signal-green" />
+          <span>LINK_COPIED!</span>
+        </>
+      ) : (
+        <>
+          <Share2 className="w-3.5 h-3.5" />
+          <span>SHARE_URL</span>
+        </>
+      )}
+    </button>
   );
 }

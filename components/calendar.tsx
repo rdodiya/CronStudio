@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useCron } from '@/hooks/useCron';
 import { dayMatches } from '@/lib/cron/index';
-import { Button } from './ui/button';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function weekStartDefault(locale: string): 1 | 7 {
@@ -33,8 +32,6 @@ export function monthGrid(
   const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const firstDayJsDow = new Date(Date.UTC(year, month - 1, 1)).getUTCDay(); // 0=Sun..6=Sat
 
-  // If weekStart === 7 (Sunday start): offset is firstDayJsDow
-  // If weekStart === 1 (Monday start): offset is (firstDayJsDow + 6) % 7
   const startOffset = weekStart === 7 ? firstDayJsDow : (firstDayJsDow + 6) % 7;
 
   const rows: { date: Date | null }[][] = [];
@@ -63,22 +60,22 @@ export function monthGrid(
 }
 
 const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  'JANUARY',
+  'FEBRUARY',
+  'MARCH',
+  'APRIL',
+  'MAY',
+  'JUNE',
+  'JULY',
+  'AUGUST',
+  'SEPTEMBER',
+  'OCTOBER',
+  'NOVEMBER',
+  'DECEMBER',
 ];
 
 export function Calendar() {
-  const { state, liveParse, analysis } = useCron();
+  const { state, liveParse } = useCron();
 
   const referenceDate = useMemo(() => {
     if (state.nowOverride) {
@@ -98,20 +95,17 @@ export function Calendar() {
   }, [referenceDate]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('cs.weekStart');
-    if (saved === '1' || saved === '7') {
-      setWeekStart(Number(saved) as 1 | 7);
-    } else if (typeof navigator !== 'undefined') {
-      setWeekStart(weekStartDefault(navigator.language));
+    if (typeof navigator !== 'undefined') {
+      const locale = navigator.language || 'en-US';
+      setWeekStart(weekStartDefault(locale));
     }
   }, []);
 
-  const handleWeekStartToggle = (ws: 1 | 7) => {
-    setWeekStart(ws);
-    localStorage.setItem('cs.weekStart', String(ws));
-  };
+  const grid = useMemo(() => {
+    return monthGrid(currentYear, currentMonth, weekStart);
+  }, [currentYear, currentMonth, weekStart]);
 
-  const handlePrevMonth = () => {
+  const prevMonth = () => {
     if (currentMonth === 1) {
       setCurrentMonth(12);
       setCurrentYear((y) => y - 1);
@@ -120,7 +114,7 @@ export function Calendar() {
     }
   };
 
-  const handleNextMonth = () => {
+  const nextMonth = () => {
     if (currentMonth === 12) {
       setCurrentMonth(1);
       setCurrentYear((y) => y + 1);
@@ -129,127 +123,115 @@ export function Calendar() {
     }
   };
 
-  const grid = useMemo(() => {
-    return monthGrid(currentYear, currentMonth, weekStart);
-  }, [currentYear, currentMonth, weekStart]);
-
-  const dayHeaders = weekStart === 7
-    ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
   const schedule = liveParse.ok && 'schedule' in liveParse ? liveParse.schedule : null;
 
+  // Active days count in this month
+  const activeDaysCount = useMemo(() => {
+    if (!schedule) return 0;
+    const daysInMonth = new Date(Date.UTC(currentYear, currentMonth, 0)).getUTCDate();
+    let count = 0;
+    for (let d = 1; d <= daysInMonth; d++) {
+      if (dayMatches(schedule, currentYear, currentMonth, d)) {
+        count++;
+      }
+    }
+    return count;
+  }, [schedule, currentYear, currentMonth]);
+
+  const weekdayHeaders =
+    weekStart === 7
+      ? ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+      : ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
   return (
-    <div className="flex flex-col gap-4 p-4 rounded-xl border bg-card text-card-foreground shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <div className="flex flex-col border-2 border-border bg-card shadow-[4px_4px_0px_var(--border)]">
+      {/* Header */}
+      <div className="p-3 border-b-2 border-border bg-paper flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <CalendarIcon className="w-4 h-4 text-primary" />
-          <h2 className="text-sm font-semibold">Monthly Calendar Heatmap</h2>
+          <CalendarIcon className="w-4 h-4 text-foreground" />
+          <h2 className="font-mono text-xs font-black uppercase tracking-wider text-foreground">
+            MONTHLY CALENDAR MATRIX // {MONTH_NAMES[currentMonth - 1]} {currentYear}
+          </h2>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Week start selector */}
-          <div className="flex items-center gap-1 bg-muted p-0.5 rounded-lg text-xs">
-            <button
-              type="button"
-              onClick={() => handleWeekStartToggle(7)}
-              className={`px-2 py-0.5 rounded-md font-medium transition-colors ${
-                weekStart === 7
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Sun
-            </button>
-            <button
-              type="button"
-              onClick={() => handleWeekStartToggle(1)}
-              className={`px-2 py-0.5 rounded-md font-medium transition-colors ${
-                weekStart === 1
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Mon
-            </button>
-          </div>
+        <div className="flex items-center gap-2 font-mono">
+          <span className="text-[10px] font-black uppercase bg-primary text-primary-foreground px-2 py-0.5 border-2 border-border shadow-[1px_1px_0px_var(--border)]">
+            {activeDaysCount} TRIGGER DAYS
+          </span>
 
-          {/* Month pagination */}
-          <div className="flex items-center gap-1">
-            <Button variant="outline" size="icon" onClick={handlePrevMonth} className="w-7 h-7">
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-            <span className="text-xs font-semibold min-w-[110px] text-center">
-              {MONTH_NAMES[currentMonth - 1]} {currentYear}
-            </span>
-            <Button variant="outline" size="icon" onClick={handleNextMonth} className="w-7 h-7">
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+          <div className="flex items-center border-2 border-border bg-card">
+            <button
+              type="button"
+              onClick={prevMonth}
+              aria-label="Previous Month"
+              className="p-1 hover:bg-muted border-r-2 border-border active:translate-x-[1px] active:translate-y-[1px]"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={nextMonth}
+              aria-label="Next Month"
+              className="p-1 hover:bg-muted active:translate-x-[1px] active:translate-y-[1px]"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* 7-column calendar grid */}
-      <div className="border rounded-lg p-2 bg-muted/10 overflow-x-auto">
-        <div className="grid grid-cols-7 gap-1 text-center min-w-[320px]">
-          {/* Weekday headers */}
-          {dayHeaders.map((dh, i) => (
-            <div key={i} className="text-[11px] font-semibold text-muted-foreground py-1">
-              {dh}
+      <div className="p-4 font-mono">
+        {/* 7-Column Grid Matrix with solid keylines */}
+        <div className="grid grid-cols-7 border-t-2 border-l-2 border-border bg-paper-dark">
+          {/* Header Row */}
+          {weekdayHeaders.map((day, idx) => (
+            <div
+              key={idx}
+              className={`p-1.5 text-center text-[10px] font-black uppercase bg-card border-r-2 border-b-2 border-border ${
+                day === 'SUN' || day === 'SAT' ? 'text-muted-foreground' : 'text-foreground'
+              }`}
+            >
+              {day}
             </div>
           ))}
 
-          {/* Days cells */}
+          {/* Grid Cells */}
           {grid.map((row, rIdx) =>
             row.map((cell, cIdx) => {
               if (!cell.date) {
-                return <div key={`${rIdx}-${cIdx}`} className="h-9 rounded-md bg-transparent" />;
+                return (
+                  <div
+                    key={`${rIdx}-${cIdx}`}
+                    className="p-1.5 min-h-[46px] bg-paper-dark border-r-2 border-b-2 border-border opacity-30"
+                  />
+                );
               }
 
               const dayNum = cell.date.getUTCDate();
-              const jsDow = cell.date.getUTCDay();
-              const isWeekend = jsDow === 0 || jsDow === 6;
-
-              const isMatch = schedule
-                ? dayMatches(schedule, currentYear, currentMonth, dayNum)
-                : false;
-
-              // Check if date is today
-              const isToday =
-                cell.date.getUTCFullYear() === referenceDate.getUTCFullYear() &&
-                cell.date.getUTCMonth() === referenceDate.getUTCMonth() &&
-                cell.date.getUTCDate() === referenceDate.getUTCDate();
-
-              // Check if DST transition date
-              const isDstDay = analysis.transitions.some((tr) => {
-                const trDate = tr.at;
-                return (
-                  trDate.getUTCFullYear() === currentYear &&
-                  trDate.getUTCMonth() + 1 === currentMonth &&
-                  trDate.getUTCDate() === dayNum
-                );
-              });
+              const cellMonth = cell.date.getUTCMonth() + 1;
+              const cellYear = cell.date.getUTCFullYear();
+              const isMatch = schedule ? dayMatches(schedule, cellYear, cellMonth, dayNum) : false;
 
               return (
                 <div
                   key={`${rIdx}-${cIdx}`}
-                  tabIndex={0}
                   data-testid={isMatch ? 'calendar-active-day' : undefined}
-                  className={`h-9 rounded-md flex flex-col items-center justify-center text-xs font-medium transition-colors relative cursor-default ${
+                  className={`p-1.5 min-h-[46px] border-r-2 border-b-2 border-border flex flex-col justify-between transition-none ${
                     isMatch
-                      ? 'bg-primary text-primary-foreground font-bold shadow-sm'
-                      : isWeekend
-                      ? 'bg-muted/40 text-muted-foreground'
-                      : 'bg-background hover:bg-muted text-foreground'
-                  } ${isToday ? 'ring-2 ring-primary ring-offset-1' : ''}`}
-                  title={`${MONTH_NAMES[currentMonth - 1]} ${dayNum}, ${currentYear}${
-                    isMatch ? ' (Schedule matches)' : ''
-                  }${isDstDay ? ' (DST transition)' : ''}`}
+                      ? 'bg-primary text-primary-foreground font-black'
+                      : 'bg-card text-muted-foreground hover:bg-paper'
+                  }`}
                 >
-                  <span>{dayNum}</span>
-                  {isDstDay && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 absolute bottom-1" />
-                  )}
+                  <span className="text-xs font-black leading-none">{dayNum}</span>
+                  <span
+                    className={`text-[8px] font-black uppercase px-1 py-0.2 self-start border ${
+                      isMatch
+                        ? 'bg-foreground text-background border-foreground'
+                        : 'text-muted-foreground/60 border-transparent'
+                    }`}
+                  >
+                    {isMatch ? 'ACTIVE' : 'OFF'}
+                  </span>
                 </div>
               );
             })

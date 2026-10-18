@@ -4,45 +4,35 @@ import React from 'react';
 import { useCron } from '@/hooks/useCron';
 import { Dialect } from '@/lib/cron/types';
 import { DIALECTS } from '@/lib/cron/dialects';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select';
 
 export function DialectSelector() {
   const { state, dispatch } = useCron();
 
-  const handleChange = (val: string) => {
-    dispatch({ type: 'SET_DIALECT', dialect: val as Dialect });
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    dispatch({ type: 'SET_DIALECT', dialect: e.target.value as Dialect });
   };
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <label htmlFor="dialect-selector" className="text-xs font-medium text-muted-foreground">
-        Dialect
+    <div className="flex items-center bg-card border-2 border-border shadow-[2px_2px_0px_var(--border)] px-2 py-1">
+      <label
+        htmlFor="dialect-select-id"
+        className="font-mono text-[10px] font-black text-muted-foreground uppercase mr-2 shrink-0 select-none"
+      >
+        DIALECT:
       </label>
-      <Select value={state.dialect} onValueChange={handleChange}>
-        <SelectTrigger id="dialect-selector" data-testid="dialect-select" className="w-[200px]">
-          <SelectValue placeholder="Select dialect" />
-        </SelectTrigger>
-        <SelectContent>
-          {Object.entries(DIALECTS).map(([key, meta]) => (
-            <SelectItem key={key} value={key}>
-              <div className="flex items-center gap-2">
-                <span>{meta.label}</span>
-                {meta.utcOnly && (
-                  <span className="text-[10px] px-1 py-0.5 rounded bg-amber-500/10 text-amber-600 font-mono">
-                    UTC
-                  </span>
-                )}
-              </div>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <select
+        id="dialect-select-id"
+        data-testid="dialect-select"
+        value={state.dialect}
+        onChange={handleChange}
+        className="bg-transparent font-mono text-xs font-bold uppercase text-foreground focus:outline-none cursor-pointer"
+      >
+        {Object.entries(DIALECTS).map(([key, meta]) => (
+          <option key={key} value={key} className="bg-popover text-popover-foreground">
+            {meta.label} {meta.utcOnly ? '(UTC)' : ''}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

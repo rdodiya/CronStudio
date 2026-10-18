@@ -16,81 +16,100 @@ import { FrequencySummary } from '@/components/frequency-summary';
 import { Timeline } from '@/components/timeline';
 import { Calendar } from '@/components/calendar';
 import { NextRunsTable } from '@/components/next-runs-table';
-import { Clock, ShieldCheck, Share2, AlertCircle } from 'lucide-react';
+import { Terminal, Shield, Share2, AlertCircle } from 'lucide-react';
 
 function CronStudioMain() {
   const { state, nowIssue } = useCron();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors">
-      {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+    <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-primary selection:text-primary-foreground font-sans">
+      {/* Top Running Header / Brand Bar */}
+      <header className="w-full bg-card border-b-2 border-border sticky top-0 z-50">
+        <div className="max-w-[1720px] mx-auto px-4 lg:px-6 h-14 flex items-center justify-between gap-4">
+          {/* Left Brand & Status */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold">
-              <Clock className="w-5 h-5" />
+            <div className="h-9 px-2.5 bg-primary text-primary-foreground border-2 border-border flex items-center gap-1.5 shadow-[2px_2px_0px_var(--border)]">
+              <Terminal className="w-4 h-4" />
+              <span className="font-mono font-black text-sm tracking-tight">CRON_STUDIO</span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-base sm:text-lg tracking-tight">Cron Studio</span>
-                <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
-                  v1.0
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground hidden sm:block">
-                Developer-grade cron schedule builder, explainer & safety validator
-              </p>
-            </div>
+            <span className="font-mono text-[11px] font-black px-2 py-0.5 bg-foreground text-background">
+              v1.2 // PRO
+            </span>
+            <span className="hidden md:inline-block font-mono text-[11px] font-bold text-muted-foreground pl-2 border-l-2 border-border">
+              Deterministic Schedule Compiler, Explainer & Safety Linter
+            </span>
           </div>
 
-          {/* Global Header Controls */}
-          <div className="flex items-center gap-2">
-            <DialectSelector />
-            <TimezoneSelector />
+          {/* Right Meta Tools */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 bg-paper border-2 border-border shadow-[2px_2px_0px_var(--border)]">
+              <Shield className="w-3.5 h-3.5 text-foreground" />
+              <span className="font-mono text-[11px] font-bold text-foreground">
+                100% CLIENT-SIDE | ZERO TELEMETRY
+              </span>
+            </div>
             <ShareUrl />
             <ThemeToggle />
           </div>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      {/* Main Workbench Container */}
+      <main className="max-w-[1720px] w-full mx-auto px-3 sm:px-4 lg:px-6 py-5 flex flex-col gap-6">
         {/* Share Hydration Banner */}
         {state.fromShare && (
           <div
             data-testid="share-banner"
-            className="flex items-center gap-2.5 p-3 rounded-lg bg-primary/10 border border-primary/20 text-xs text-primary font-medium"
+            className="flex items-center gap-2.5 p-3 border-2 border-border bg-primary text-primary-foreground font-mono text-xs font-black shadow-[3px_3px_0px_var(--border)]"
           >
             <Share2 className="w-4 h-4 shrink-0" />
             <span>
-              Schedule loaded from shared link ({state.dialect} dialect &middot; timezone:{' '}
-              {state.tz})
+              {`//`} SCHEDULE LOADED FROM SHARED LINK &middot; DIALECT: {state.dialect.toUpperCase()} &middot; TIMEZONE: {state.tz}
             </span>
           </div>
         )}
 
         {/* Invalid Now Override Alert */}
         {nowIssue && (
-          <div className="flex items-center gap-2.5 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-400 font-medium">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="flex items-center gap-2.5 p-3 border-2 border-secondary bg-secondary/15 text-foreground font-mono text-xs font-bold shadow-[3px_3px_0px_var(--border)]">
+            <AlertCircle className="w-4 h-4 shrink-0 text-secondary" />
             <span>{nowIssue}</span>
           </div>
         )}
 
-        {/* Primary Interactive Panels: 2 columns on lg, 1 column on mobile */}
+        {/* Global Control Bar Deck */}
+        <section className="w-full bg-paper border-2 border-border p-3 lg:px-4 lg:py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-[4px_4px_0px_var(--border)]">
+          <div className="flex flex-wrap items-center gap-3">
+            <DialectSelector />
+            <TimezoneSelector />
+          </div>
+          <div className="flex items-center gap-2 font-mono text-[11px] font-black">
+            <span className="px-2 py-1 bg-primary text-primary-foreground border-2 border-border shadow-[2px_2px_0px_var(--border)]">
+              STATE: VERIFIED VALID
+            </span>
+          </div>
+        </section>
+
+        {/* Natural Language Specification Hero Banner */}
+        <ExplanationPanel />
+
+        {/* Raw Cron Input & Frequency KPIs Deck */}
+        <div className="flex flex-col gap-6">
+          <CronInput />
+          <FrequencySummary />
+        </div>
+
+        {/* Two-Column Workbench Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Left Column: Expression Input, Builder, Explanation, Safety, Export */}
+          {/* Left Column: Visual Builder, Safety & Diagnostics, Exporters */}
           <div className="lg:col-span-6 flex flex-col gap-6">
-            <CronInput />
             <VisualBuilder />
-            <ExplanationPanel />
             <SafetyChecks />
             <ExportPanel />
           </div>
 
-          {/* Right Column: Frequency Summary, Visual Timeline, Calendar, Next Runs Table */}
+          {/* Right Column: Visual Timeline, Calendar Matrix, Upcoming Runs Ledger */}
           <div className="lg:col-span-6 flex flex-col gap-6">
-            <FrequencySummary />
             <Timeline />
             <Calendar />
             <NextRunsTable />
@@ -99,15 +118,14 @@ function CronStudioMain() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-6 mt-12 bg-muted/20 text-xs text-muted-foreground">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+      <footer className="border-t-2 border-border py-5 mt-10 bg-card font-mono text-xs text-muted-foreground">
+        <div className="max-w-[1720px] mx-auto px-4 lg:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-foreground font-bold">
+            <Shield className="w-4 h-4 text-signal-green" />
             <span>100% Client-Side Privacy: Schedules and data never leave your browser.</span>
           </div>
-          <p>
-            Cron Studio &middot; MIT License &middot; Multi-dialect engine supporting Unix, Quartz,
-            EventBridge, GitHub, Kubernetes & Vercel.
+          <p className="font-medium">
+            CRON STUDIO &middot; Neo-Brutalist Developer Workbench &middot; MIT License
           </p>
         </div>
       </footer>

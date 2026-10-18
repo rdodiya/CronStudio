@@ -1,19 +1,25 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check, Copy } from 'lucide-react';
-import { Button } from './ui/button';
+import { Copy, Check } from 'lucide-react';
 
-export interface CopyButtonProps {
+interface CopyButtonProps {
   text: string;
-  label: string;
-  big?: boolean;
+  label?: string;
   testId?: string;
+  className?: string;
+  big?: boolean;
 }
 
-export function CopyButton({ text, label, big, testId }: CopyButtonProps) {
+export function CopyButton({
+  text,
+  label = 'Copy',
+  testId = 'copy-button',
+  className,
+  big,
+}: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
-  const [liveAnnouncement, setLiveAnnouncement] = useState('');
+  const [announced, setAnnounced] = useState('');
 
   const handleCopy = async () => {
     try {
@@ -21,51 +27,46 @@ export function CopyButton({ text, label, big, testId }: CopyButtonProps) {
         await navigator.clipboard.writeText(text);
       }
       setCopied(true);
-      setLiveAnnouncement(`Copied ${label} to clipboard`);
-
+      setAnnounced(`Copied ${label}`);
       setTimeout(() => {
         setCopied(false);
-        setLiveAnnouncement('');
+        setAnnounced('');
       }, 2000);
     } catch {
-      setLiveAnnouncement(`Failed to copy ${label}`);
+      // Fallback
     }
   };
 
   return (
-    <div className="relative inline-flex items-center">
-      <Button
-        variant={big ? 'default' : 'outline'}
-        size={big ? 'default' : 'sm'}
-        onClick={handleCopy}
+    <>
+      <button
+        type="button"
         data-testid={testId}
-        aria-label={`Copy ${label}`}
-        className="inline-flex items-center gap-1.5"
+        onClick={handleCopy}
+        aria-label={copied ? 'Copied to clipboard' : `Copy ${label}`}
+        className={`inline-flex items-center gap-1.5 font-mono font-black uppercase border-2 border-border shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none ${
+          big ? 'px-3.5 py-1.5 text-sm' : 'px-2.5 py-1 text-xs'
+        } ${
+          copied
+            ? 'bg-primary text-primary-foreground'
+            : 'bg-card text-foreground hover:bg-primary hover:text-primary-foreground'
+        } ${className || ''}`}
       >
         {copied ? (
           <>
-            <Check data-testid="copy-check" className="w-4 h-4 text-green-500" />
-            <span>Copied!</span>
+            <Check data-testid="copy-check" className="w-3.5 h-3.5" />
+            <span>COPIED!</span>
           </>
         ) : (
           <>
-            <Copy className="w-4 h-4" />
-            <span>{big ? `Copy ${label}` : 'Copy'}</span>
+            <Copy className="w-3.5 h-3.5" />
+            <span>{label}</span>
           </>
         )}
-      </Button>
-
-      {/* Screen reader announcement live region */}
+      </button>
       <div role="status" aria-live="polite" className="sr-only">
-        {liveAnnouncement}
+        {announced}
       </div>
-
-      {/* Visual toast for big button */}
-      {big && copied && (
-        <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1 text-xs bg-popover text-popover-foreground border rounded shadow animate-in fade-in">
-          Copied to clipboard!
-        </div>
-      )}
-    </div>
+    </>
   );
 }

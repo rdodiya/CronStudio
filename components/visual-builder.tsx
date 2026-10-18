@@ -12,15 +12,16 @@ import { convertUnixToQuartz } from '@/lib/cron/compatibility';
 import { DIALECTS } from '@/lib/cron/dialects';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { SlidersHorizontal } from 'lucide-react';
 
 const WEEKDAYS = [
-  { val: 1, label: 'Mon' },
-  { val: 2, label: 'Tue' },
-  { val: 3, label: 'Wed' },
-  { val: 4, label: 'Thu' },
-  { val: 5, label: 'Fri' },
-  { val: 6, label: 'Sat' },
-  { val: 0, label: 'Sun' },
+  { val: 1, label: 'MON', qtz: 2 },
+  { val: 2, label: 'TUE', qtz: 3 },
+  { val: 3, label: 'WED', qtz: 4 },
+  { val: 4, label: 'THU', qtz: 5 },
+  { val: 5, label: 'FRI', qtz: 6 },
+  { val: 6, label: 'SAT', qtz: 7 },
+  { val: 0, label: 'SUN', qtz: 1 },
 ];
 
 function getPresetTestId(preset: { id: string; label: string }): string {
@@ -99,34 +100,83 @@ export function VisualBuilder() {
     updateBuilder({ weekdays: next });
   };
 
+  const cadenceTabs: { id: BuilderState['frequency']; label: string }[] = [
+    { id: 'minutes', label: 'MINUTES' },
+    { id: 'hourly', label: 'HOURLY' },
+    { id: 'daily', label: 'DAILY' },
+    { id: 'weekly', label: 'WEEKLY' },
+    { id: 'monthly', label: 'MONTHLY' },
+    { id: 'custom', label: 'CUSTOM' },
+  ];
+
   return (
-    <div className="flex flex-col gap-4 p-4 rounded-xl border bg-card text-card-foreground shadow-sm">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold">Visual Builder & Presets</h2>
-      </div>
-
-      {/* Preset buttons */}
-      <div className="flex flex-wrap gap-2">
-        {PRESETS.filter((p) => p.id !== 'custom').map((p) => (
-          <Button
-            key={p.id}
-            variant="outline"
-            size="sm"
-            data-testid={getPresetTestId(p)}
-            onClick={() => handlePresetClick(p.expr)}
-            className="text-xs"
-          >
-            {p.label}
-          </Button>
-        ))}
-      </div>
-
-      {/* Frequency selector */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-2 border-t">
+    <div className="flex flex-col border-2 border-border bg-card shadow-[4px_4px_0px_var(--border)]">
+      {/* Header */}
+      <div className="p-3 border-b-2 border-border bg-paper flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <label htmlFor="frequency-select" className="text-xs font-medium text-muted-foreground">
-            Schedule:
+          <SlidersHorizontal className="w-4 h-4 text-foreground" />
+          <h2 className="font-mono text-xs font-black uppercase tracking-wider text-foreground">
+            QUARTZ-AWARE VISUAL BUILDER & SYNTHESIZER
+          </h2>
+        </div>
+        <span className="font-mono text-[10px] font-black uppercase bg-primary text-primary-foreground border-2 border-border px-1.5 py-0.2 shadow-[1px_1px_0px_var(--border)]">
+          INTERACTIVE COMPILER
+        </span>
+      </div>
+
+      <div className="p-4 flex flex-col gap-4">
+        {/* Preset Buttons */}
+        <div className="flex flex-col gap-1.5">
+          <label className="font-mono text-[10px] font-extrabold uppercase text-muted-foreground block">
+            PRESET QUICK-SEED BANK
           </label>
+          <div className="flex flex-wrap gap-1.5">
+            {PRESETS.filter((p) => p.id !== 'custom').map((p) => {
+              const isActive = state.expr.trim() === p.expr.trim();
+              return (
+                <Button
+                  key={p.id}
+                  variant={isActive ? 'default' : 'outline'}
+                  size="sm"
+                  data-testid={getPresetTestId(p)}
+                  onClick={() => handlePresetClick(p.expr)}
+                  className={`font-mono text-[11px] font-bold ${
+                    isActive ? 'bg-primary text-primary-foreground font-black' : ''
+                  }`}
+                >
+                  {p.label}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Cadence Selection Tabs */}
+        <div className="flex flex-col gap-1.5 pt-2 border-t-2 border-border">
+          <label className="font-mono text-[10px] font-extrabold uppercase text-muted-foreground block">
+            CADENCE SELECTION
+          </label>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+            {cadenceTabs.map((tab) => {
+              const isSelected = builderState.frequency === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => handleFrequencyChange(tab.id)}
+                  className={`py-1.5 px-2 font-mono text-[11px] font-black uppercase border-2 border-border shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none ${
+                    isSelected
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-card text-foreground hover:bg-muted'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Hidden select for contract test compatibility */}
           <select
             id="frequency-select"
             data-testid="frequency-select"
@@ -134,7 +184,8 @@ export function VisualBuilder() {
             onChange={(e) =>
               handleFrequencyChange(e.target.value as BuilderState['frequency'])
             }
-            className="text-xs h-8 px-2.5 rounded-md border bg-background font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="sr-only"
+            aria-label="Cadence frequency select"
           >
             <option value="minutes">Every N minutes</option>
             <option value="hourly">Hourly</option>
@@ -147,150 +198,184 @@ export function VisualBuilder() {
 
         {/* Minutes controls */}
         {builderState.frequency === 'minutes' && (
-          <div className="flex items-center gap-2 text-xs">
-            <span>Every</span>
+          <div className="p-3 bg-paper border-2 border-border flex items-center gap-2 font-mono text-xs">
+            <span className="font-bold">EVERY</span>
             <Input
               type="number"
               min={1}
               max={59}
               value={builderState.everyN}
               onChange={(e) => updateBuilder({ everyN: Number(e.target.value) || 1 })}
-              className="w-16 h-8 text-xs text-center"
+              className="w-16 h-8 text-center font-black"
             />
-            <span>minutes</span>
+            <span className="font-bold">MINUTES</span>
           </div>
         )}
 
         {/* Hourly controls */}
         {builderState.frequency === 'hourly' && (
-          <div className="flex items-center gap-2 text-xs">
-            <span>At minute</span>
+          <div className="p-3 bg-paper border-2 border-border flex flex-wrap items-center gap-2 font-mono text-xs">
+            <span className="font-bold">AT MINUTE</span>
             <Input
               type="number"
               min={0}
               max={59}
               value={builderState.minute}
               onChange={(e) => updateBuilder({ minute: Number(e.target.value) || 0 })}
-              className="w-16 h-8 text-xs text-center"
+              className="w-16 h-8 text-center font-black"
             />
-            <span>every</span>
+            <span className="font-bold">EVERY</span>
             <Input
               type="number"
               min={1}
               max={23}
               value={builderState.everyN}
               onChange={(e) => updateBuilder({ everyN: Number(e.target.value) || 1 })}
-              className="w-16 h-8 text-xs text-center"
+              className="w-16 h-8 text-center font-black"
             />
-            <span>hour(s)</span>
+            <span className="font-bold">HOUR(S)</span>
           </div>
         )}
 
-        {/* Daily controls */}
+        {/* Daily execution time */}
         {builderState.frequency === 'daily' && (
-          <div className="flex items-center gap-2 text-xs">
-            <span>At</span>
-            <Input
-              type="number"
-              min={0}
-              max={23}
-              value={builderState.hour}
-              onChange={(e) => updateBuilder({ hour: Number(e.target.value) || 0 })}
-              className="w-16 h-8 text-xs text-center"
-            />
-            <span>:</span>
-            <Input
-              type="number"
-              min={0}
-              max={59}
-              value={builderState.minute}
-              onChange={(e) => updateBuilder({ minute: Number(e.target.value) || 0 })}
-              className="w-16 h-8 text-xs text-center"
-            />
+          <div className="p-3 bg-paper border-2 border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span className="font-mono text-[11px] font-black uppercase text-foreground block">
+                TRIGGER EXECUTION TIME
+              </span>
+              <span className="font-mono text-[10px] text-muted-foreground">
+                24-hour timestamp specification ({state.tz})
+              </span>
+            </div>
+            <div className="flex items-center gap-1 font-mono text-lg font-black bg-card border-2 border-border p-1 shadow-[2px_2px_0px_var(--border)]">
+              <Input
+                type="number"
+                min={0}
+                max={23}
+                value={builderState.hour}
+                onChange={(e) => updateBuilder({ hour: Number(e.target.value) || 0 })}
+                className="w-12 h-7 text-center font-black border-none shadow-none text-base p-0"
+              />
+              <span>:</span>
+              <Input
+                type="number"
+                min={0}
+                max={59}
+                value={builderState.minute}
+                onChange={(e) => updateBuilder({ minute: Number(e.target.value) || 0 })}
+                className="w-12 h-7 text-center font-black border-none shadow-none text-base p-0"
+              />
+            </div>
           </div>
         )}
 
         {/* Monthly controls */}
         {builderState.frequency === 'monthly' && (
-          <div className="flex items-center gap-2 text-xs">
-            <span>On day</span>
+          <div className="p-3 bg-paper border-2 border-border flex flex-wrap items-center gap-2 font-mono text-xs">
+            <span className="font-bold">ON DAY</span>
             <Input
               type="number"
               min={1}
               max={31}
               value={builderState.dayOfMonth}
               onChange={(e) => updateBuilder({ dayOfMonth: Number(e.target.value) || 1 })}
-              className="w-16 h-8 text-xs text-center"
+              className="w-16 h-8 text-center font-black"
             />
-            <span>at</span>
+            <span className="font-bold">AT</span>
             <Input
               type="number"
               min={0}
               max={23}
               value={builderState.hour}
               onChange={(e) => updateBuilder({ hour: Number(e.target.value) || 0 })}
-              className="w-16 h-8 text-xs text-center"
+              className="w-14 h-8 text-center font-black"
             />
-            <span>:</span>
+            <span className="font-black">:</span>
             <Input
               type="number"
               min={0}
               max={59}
               value={builderState.minute}
               onChange={(e) => updateBuilder({ minute: Number(e.target.value) || 0 })}
-              className="w-16 h-8 text-xs text-center"
+              className="w-14 h-8 text-center font-black"
             />
           </div>
         )}
+
+        {/* Weekly Day-of-Week strip */}
+        {builderState.frequency === 'weekly' && (
+          <div data-testid="weekday-checkboxes" className="flex flex-col gap-3 pt-2 border-t-2 border-border">
+            <div className="p-3 bg-paper border-2 border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="font-mono text-[11px] font-black uppercase text-foreground block">
+                  TRIGGER EXECUTION TIME
+                </span>
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  Executed on selected active days ({state.tz})
+                </span>
+              </div>
+              <div className="flex items-center gap-1 font-mono text-lg font-black bg-card border-2 border-border p-1 shadow-[2px_2px_0px_var(--border)]">
+                <Input
+                  type="number"
+                  min={0}
+                  max={23}
+                  value={builderState.hour}
+                  onChange={(e) => updateBuilder({ hour: Number(e.target.value) || 0 })}
+                  className="w-12 h-7 text-center font-black border-none shadow-none text-base p-0"
+                />
+                <span>:</span>
+                <Input
+                  type="number"
+                  min={0}
+                  max={59}
+                  value={builderState.minute}
+                  onChange={(e) => updateBuilder({ minute: Number(e.target.value) || 0 })}
+                  className="w-12 h-7 text-center font-black border-none shadow-none text-base p-0"
+                />
+              </div>
+            </div>
+
+            {/* 7-Day Tactile Switch Row */}
+            <div className="p-3 bg-paper border-2 border-border flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[11px] font-black uppercase text-foreground">
+                  WEEKDAY SELECTION ({isQuartz ? 'QUARTZ 1=SUN..7=SAT' : 'UNIX 0=SUN..6=SAT'})
+                </span>
+                <span className="font-mono text-[10px] font-bold bg-card border border-border px-1.5 py-0.2">
+                  {builderState.weekdays.length} Active Days
+                </span>
+              </div>
+              <div className="grid grid-cols-7 gap-1.5">
+                {WEEKDAYS.map((day) => {
+                  const isChecked = builderState.weekdays.includes(day.val);
+                  return (
+                    <button
+                      key={day.val}
+                      type="button"
+                      data-testid={`weekday-checkbox-${day.val}`}
+                      onClick={() => toggleWeekday(day.val)}
+                      className={`p-2 border-2 border-border flex flex-col items-center shadow-[2px_2px_0px_var(--border)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none ${
+                        isChecked
+                          ? 'bg-primary text-primary-foreground font-black'
+                          : 'bg-card text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <span className="font-mono text-[9px] font-bold uppercase opacity-70">
+                        {isQuartz ? day.qtz : day.val}
+                      </span>
+                      <span className="font-mono text-xs font-black">{day.label}</span>
+                      <span className="font-mono text-[8px] uppercase font-bold mt-0.5">
+                        {isChecked ? 'ACTIVE' : 'OFF'}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Weekly weekday checkboxes */}
-      {builderState.frequency === 'weekly' && (
-        <div data-testid="weekday-checkboxes" className="flex flex-col gap-2 pt-2 border-t">
-          <div className="flex items-center gap-2 text-xs">
-            <span>At</span>
-            <Input
-              type="number"
-              min={0}
-              max={23}
-              value={builderState.hour}
-              onChange={(e) => updateBuilder({ hour: Number(e.target.value) || 0 })}
-              className="w-16 h-8 text-xs text-center"
-            />
-            <span>:</span>
-            <Input
-              type="number"
-              min={0}
-              max={59}
-              value={builderState.minute}
-              onChange={(e) => updateBuilder({ minute: Number(e.target.value) || 0 })}
-              className="w-16 h-8 text-xs text-center"
-            />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-xs text-muted-foreground mr-1">On days:</span>
-            {WEEKDAYS.map((day) => {
-              const isChecked = builderState.weekdays.includes(day.val);
-              return (
-                <button
-                  key={day.val}
-                  type="button"
-                  data-testid={`weekday-checkbox-${day.val}`}
-                  onClick={() => toggleWeekday(day.val)}
-                  className={`text-xs px-2.5 py-1 rounded border font-medium transition-colors ${
-                    isChecked
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'bg-background hover:bg-accent text-foreground'
-                  }`}
-                >
-                  {day.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
