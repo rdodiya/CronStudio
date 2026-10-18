@@ -20,7 +20,7 @@ import { NextRunsTable } from '@/components/next-runs-table';
 import { Terminal, Shield, Share2, AlertCircle, ArrowLeft } from 'lucide-react';
 
 function CronWorkbench() {
-  const { state, nowIssue } = useCron();
+  const { state, nowIssue, liveParse } = useCron();
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-primary selection:text-primary-foreground font-sans">
@@ -59,6 +59,7 @@ function CronWorkbench() {
                 100% CLIENT-SIDE | ZERO TELEMETRY
               </span>
             </div>
+
             <ShareUrl />
             <ThemeToggle />
           </div>
@@ -68,7 +69,7 @@ function CronWorkbench() {
       {/* Main Workbench Container */}
       <main className="max-w-[1720px] w-full mx-auto px-3 sm:px-4 lg:px-6 py-5 flex flex-col gap-6">
         {/* Share Hydration Banner */}
-        {state.fromShare && (
+        {state.fromShare && liveParse.ok && (
           <div
             data-testid="share-banner"
             className="flex items-center gap-2.5 p-3 border-2 border-border bg-primary text-primary-foreground font-mono text-xs font-black shadow-[3px_3px_0px_var(--border)]"

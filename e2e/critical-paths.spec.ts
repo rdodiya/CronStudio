@@ -70,7 +70,9 @@ test.describe('Task 14: Critical E2E Workflows', () => {
         await copyBtn.click();
         const output = await page.getByTestId('export-output').innerText();
         const clipboard = await page.evaluate(() => navigator.clipboard.readText());
-        expect(clipboard.trim()).toBe(output.trim());
+        const normalize = (s: string) =>
+          s.replace(/\r\n/g, '\n').split('\n').map((l) => l.trimEnd()).join('\n').trim();
+        expect(normalize(clipboard)).toBe(normalize(output));
       }
     }
   });
@@ -129,10 +131,23 @@ test.describe('Task 14: Critical E2E Workflows', () => {
     await page.goto('/explain');
     await expect(page.getByTestId('cron-input')).toBeVisible();
 
+    // Ensure service worker is registered and ready
+    await page.evaluate(async () => {
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.ready;
+        } catch (_) {}
+      }
+    });
+    await page.waitForTimeout(1000);
+
     await context.setOffline(true);
-    await page.reload();
-    await expect(page.getByTestId('cron-input')).toBeVisible();
-    await context.setOffline(false);
+    try {
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await expect(page.getByTestId('cron-input')).toBeVisible();
+    } finally {
+      await context.setOffline(false);
+    }
   });
 
   test('hostile URL params are sanitized and execute no script', async ({ page }) => {

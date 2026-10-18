@@ -41,3 +41,7 @@ PROJECT_REQUIREMENTS.md
 DESIGN_QUESTIONS.md
 DESIGN_QUE_ANS.md
 .claude/
+
+# playwright
+playwright-report/
+test-results/

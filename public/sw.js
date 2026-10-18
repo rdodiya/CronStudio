@@ -1,7 +1,14 @@
 // Service Worker for Cron Studio
 const CACHE_NAME = 'cron-studio-v1';
 
+const PRECACHE_URLS = ['/', '/explain/', '/explain'];
+
 self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(PRECACHE_URLS).catch(() => {});
+    })
+  );
   self.skipWaiting();
 });
 
@@ -67,7 +74,13 @@ self.addEventListener('fetch', (event) => {
             return cachedResponse;
           }
           if (request.mode === 'navigate') {
-            return caches.match('/');
+            return caches.match('/explain/').then((explainRes) => {
+              if (explainRes) return explainRes;
+              return caches.match('/explain').then((expRes2) => {
+                if (expRes2) return expRes2;
+                return caches.match('/');
+              });
+            });
           }
           return new Response('Offline', { status: 503, statusText: 'Offline' });
         });

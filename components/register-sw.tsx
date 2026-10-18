@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 export function RegisterSw() {
   useEffect(() => {
     if (
-      process.env.NODE_ENV === 'production' &&
       typeof window !== 'undefined' &&
       'serviceWorker' in navigator
     ) {

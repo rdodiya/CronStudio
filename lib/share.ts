@@ -18,6 +18,7 @@ export interface ShareState {
   expr?: string;
   dialect?: Dialect;
   tz?: string;
+  now?: string;
   format?: ExportFormat;
   loaded: boolean;
 }
@@ -48,6 +49,12 @@ export function parseShareParams(search: string): ShareState {
       tz = rawTz;
     }
 
+    let now: string | undefined = undefined;
+    const rawNow = params.get('now');
+    if (rawNow && rawNow.trim().length > 0 && rawNow.length <= 100) {
+      now = rawNow.trim();
+    }
+
     let format: ExportFormat | undefined = undefined;
     const rawFormat = params.get('format');
     if (rawFormat && (VALID_FORMATS as string[]).includes(rawFormat)) {
@@ -58,6 +65,7 @@ export function parseShareParams(search: string): ShareState {
       expr,
       dialect,
       tz,
+      now,
       format,
       loaded,
     };
@@ -71,11 +79,13 @@ export function toShareQuery(s: {
   dialect: Dialect;
   tz: string;
   format: ExportFormat;
+  now?: string | null;
 }): string {
   const params = new URLSearchParams();
   if (s.expr) params.set('expr', s.expr);
   if (s.dialect) params.set('dialect', s.dialect);
   if (s.tz) params.set('tz', s.tz);
+  if (s.now) params.set('now', s.now);
   if (s.format) params.set('format', s.format);
 
   return `?${params.toString()}`;

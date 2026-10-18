@@ -26,6 +26,7 @@ export function useCron() {
             ...(share.expr ? { expr: share.expr } : {}),
             ...(share.dialect ? { dialect: share.dialect } : {}),
             ...(share.tz ? { tz: share.tz } : {}),
+            ...(share.now ? { nowOverride: share.now } : {}),
             ...(share.format ? { format: share.format } : {}),
             fromShare: true,
           },
@@ -43,18 +44,24 @@ export function useCron() {
   const debouncedExpr = useDebounce(state.expr, 150);
 
   // Sync state to URL via history.replaceState
+  const [hasMounted, setHasMounted] = useState(false);
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && hasMounted) {
       const query = toShareQuery({
         expr: debouncedExpr,
         dialect: state.dialect,
         tz: state.tz,
         format: state.format,
+        now: state.nowOverride,
       });
       const pathname = window.location.pathname || '/';
       window.history.replaceState(null, '', `${pathname}${query}`);
     }
-  }, [debouncedExpr, state.dialect, state.tz, state.format]);
+  }, [debouncedExpr, state.dialect, state.tz, state.format, state.nowOverride, hasMounted]);
 
   // Pending calculation indicator: true when debounced differs from live for > 200ms
   const [pending, setPending] = useState(false);

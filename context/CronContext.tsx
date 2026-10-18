@@ -6,6 +6,7 @@ import { DIALECTS } from '@/lib/cron/dialects';
 import { ExportFormat } from '@/lib/cron/exporter';
 import { convertQuartzToUnix, convertUnixToQuartz } from '@/lib/cron/compatibility';
 import { isValidTz } from '@/lib/timezone';
+import { parseShareParams } from '@/lib/share';
 
 export interface AppState {
   expr: string;
@@ -38,6 +39,29 @@ export const defaultState: AppState = {
   runCount: 25,
   fromShare: false,
 };
+
+export function getInitialState(initial?: Partial<AppState>): AppState {
+  let fromUrl: Partial<AppState> = {};
+  if (typeof window !== 'undefined' && window.location.search) {
+    const share = parseShareParams(window.location.search);
+    if (share.loaded) {
+      fromUrl = {
+        ...(share.expr ? { expr: share.expr } : {}),
+        ...(share.dialect ? { dialect: share.dialect } : {}),
+        ...(share.tz ? { tz: share.tz } : {}),
+        ...(share.now ? { nowOverride: share.now } : {}),
+        ...(share.format ? { format: share.format } : {}),
+        fromShare: true,
+      };
+    }
+  }
+
+  return {
+    ...defaultState,
+    ...initial,
+    ...fromUrl,
+  };
+}
 
 export function cronReducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -107,10 +131,11 @@ export function CronProvider({
   children: ReactNode;
   initial?: Partial<AppState>;
 }) {
-  const [state, dispatch] = useReducer(cronReducer, {
-    ...defaultState,
-    ...initial,
-  });
+  const [state, dispatch] = useReducer(
+    cronReducer,
+    initial,
+    (init) => getInitialState(init)
+  );
 
   return (
     <CronContext.Provider value={{ state, dispatch }}>

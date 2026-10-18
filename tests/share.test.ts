@@ -12,6 +12,13 @@ describe('Task 9: Share-URL codec', () => {
     expect(parsed.format).toBe('kubernetes');
   });
 
+  it('parses now override timestamp parameter', () => {
+    const query = '?expr=30%202%20*%20*%20*&tz=America/New_York&now=2026-03-07T00:00:00Z';
+    const parsed = parseShareParams(query);
+    expect(parsed.loaded).toBe(true);
+    expect(parsed.now).toBe('2026-03-07T00:00:00Z');
+  });
+
   it('drops invalid values and sanitizes malicious input without throwing', () => {
     const malicious = '?expr=<script>x</script>&tz=Not/AZone&dialect=evil&format=x';
     const parsed = parseShareParams(malicious);
